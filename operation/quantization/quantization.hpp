@@ -8,19 +8,28 @@
 
 template <typename QType>
 int get_bit()
-{
+{	
 	int default_bit = 8;
-	if (std::is_same<QType, uint8_t>::value || std::is_same<QType, int8_t>::value)
+	if (std::is_same<QType, uint8_t>::value)
 	{
 		default_bit = 8;
+	}
+	else if (std::is_same<QType, uint16_t>::value)
+	{
+		default_bit = 16;
 	}
 	else if (std::is_same<QType, float>::value)
 	{
 		default_bit = 32;
 	}
+	else if (std::is_same<QType, double>::value)
+	{
+		default_bit = 64;
+	}
 	else
 	{
-		std::cout << "[ERROR] Not implemented...";
+		std::string log_message = "[ERROR] This type is not supported yet...";
+		throw std::runtime_error(log_message);
 	}
 	return default_bit;
 }
@@ -50,6 +59,7 @@ QuantizedTensor<QType, DQType> quantization(const Tensor<QType> &weights, const 
 	catch (const std::exception &e)
 	{
 		std::cerr << e.what() << '\n';
+		exit(0);
 	}
 	return QuantizedTensor<QType, DQType>("");
 }
