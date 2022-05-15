@@ -15,6 +15,7 @@
   |:--:|:--:|
   |Conv2D|[src/operation/conv/conv2d.hpp](https://github.com/lyzqm123/deep_learning_operations/blob/master/src/operation/conv/conv2d.hpp)|
   |Quantization|[src/operation/quantization/quantization.hpp](https://github.com/lyzqm123/deep_learning_operations/blob/master/src/operation/quantization/quantization.hpp)|
+  |DeQuantization|[src/operation/quantization/dequantization.hpp](https://github.com/lyzqm123/deep_learning_operations/blob/master/src/operation/quantization/dequantization.hpp)|
 
 
 - **Google test**
