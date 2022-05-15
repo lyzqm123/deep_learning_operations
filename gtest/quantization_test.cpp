@@ -14,15 +14,16 @@ TEST(fp32_to_uint8_quantization_and_dequantization_test, CheckQuantizationDequan
     std::cout << "[Before quantization] <origin weights>\n";
     std::cout << weights << "\n";
 
-    const QuantizedTensor<QType, DQType> uint8_weights = quantization<QType, DQType>(weights, "quantized_weights");
+    const QuantizedTensor<QType, DQType> uint8_weights = quantization::quantization<QType, DQType>(weights, "quantized_weights");
     const auto uint8_weights_vector = uint8_weights.get_tensor();
-    for (const auto &uint8_weight : uint8_weights_vector){
+    for (const auto &uint8_weight : uint8_weights_vector)
+    {
         EXPECT_TRUE(0 <= uint8_weight && uint8_weight <= 255);
     }
     std::cout << "[After quantization] <quantized weights>\n";
     std::cout << uint8_weights << "\n";
-    
-    Tensor<QType> dequantized_weights = dequantization<DQType, QType>(uint8_weights, "dequantized_weights");
+
+    Tensor<QType> dequantized_weights = quantization::dequantization<DQType, QType>(uint8_weights, "dequantized_weights");
     std::cout << "[After dequantization] <dequantized weights>\n";
     std::cout << dequantized_weights << "\n";
 }
@@ -39,15 +40,16 @@ TEST(fp32_to_uint8_quantization_and_dequantization_test, CheckQuantizationDequan
     std::cout << "[Before quantization] <origin weights>\n";
     std::cout << weights << "\n";
 
-    const QuantizedTensor<QType, DQType> uint8_weights = quantization<QType, DQType>(weights, "quantized_weights");
+    const QuantizedTensor<QType, DQType> uint8_weights = quantization::quantization<QType, DQType>(weights, "quantized_weights");
     const auto uint8_weights_vector = uint8_weights.get_tensor();
-    for (const auto &uint8_weight : uint8_weights_vector){
+    for (const auto &uint8_weight : uint8_weights_vector)
+    {
         EXPECT_TRUE(0 <= uint8_weight && uint8_weight <= 255);
     }
     std::cout << "[After quantization] <quantized weights>\n";
     std::cout << uint8_weights << "\n";
-    
-    Tensor<QType> dequantized_weights = dequantization<DQType, QType>(uint8_weights, "dequantized_weights");
+
+    Tensor<QType> dequantized_weights = quantization::dequantization<DQType, QType>(uint8_weights, "dequantized_weights");
     std::cout << "[After dequantization] <dequantized weights>\n";
     std::cout << dequantized_weights << "\n";
 }
