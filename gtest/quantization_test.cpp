@@ -1,5 +1,6 @@
 #include "gtest/gtest.h"
 #include "quantization.hpp"
+#include "dequantization.hpp"
 
 TEST(fp32_to_uint8_quantization_and_dequantization_test, CheckQuantizationDequantizationLogic_Fp32ToUint8_Gaussian)
 {
