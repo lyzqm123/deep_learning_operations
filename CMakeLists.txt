@@ -9,6 +9,7 @@ add_executable (run main.cpp)
 
 set(DIR
 	${CMAKE_SOURCE_DIR}/operation/quantization
+	${CMAKE_SOURCE_DIR}/operation/conv
 	${CMAKE_SOURCE_DIR}/tensor)
 
 include_directories(${DIR})
