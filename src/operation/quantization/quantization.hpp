@@ -3,8 +3,8 @@
 #include <vector>
 #include <iostream>
 #include <algorithm>
-#include "../../tensor/tensor.hpp"
-#include "../../tensor/quantized_tensor.hpp"
+#include "tensor.hpp"
+#include "quantized_tensor.hpp"
 
 template <typename QType>
 int get_bit()
