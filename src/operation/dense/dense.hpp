@@ -18,7 +18,6 @@ namespace dense
             int kernel_2d_col = kernel_2d[0].size();
 
             Tensor<T> dense_output(name, kernel.get_dimension());
-            int cnt = 0;
             for (int i_row = 0; i_row < inputs_2d_row; i_row++)
             {
                 for (int k_col = 0; k_col < kernel_2d_col; k_col++)
@@ -32,7 +31,6 @@ namespace dense
                     dense_output.push_back(sum);
                 }
             }
-            std::cout << cnt << "\n";
             return dense_output;
         }
         catch (const std::exception &e)
