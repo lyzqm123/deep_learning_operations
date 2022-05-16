@@ -6,11 +6,13 @@ set(LIBRARY_OUTPUT_PATH ${CMAKE_SOURCE_DIR} )
 
 set(DIR
 	${SRC_DIR}/operation/quantization
+	${SRC_DIR}/operation/dense
 	${SRC_DIR}/operation/conv
 	${SRC_DIR}/tensor)
 set(SRC_FILES
     ${SRC_DIR}/operation/quantization/quantization.hpp
     ${SRC_DIR}/operation/conv/conv2d.hpp
+    ${SRC_DIR}/operation/dense/dense.hpp
     ${SRC_DIR}/tensor/tensor.hpp
     ${SRC_DIR}/tensor/quantized_tensor.hpp
     ${SRC_DIR}/main.cpp
