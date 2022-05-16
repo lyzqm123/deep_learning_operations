@@ -14,10 +14,11 @@
   |Operation|Location|
   |:--:|:--:|
   |Conv2D|[src/operation/conv/conv2d.hpp](https://github.com/lyzqm123/deep_learning_operations/blob/master/src/operation/conv/conv2d.hpp)|
+  |Dense| [src/operation/dense/dense.hpp](https://github.com/lyzqm123/deep_learning_operations/blob/master/src/operation/dense/dense.hpp)|
   |Quantization|[src/operation/quantization/quantization.hpp](https://github.com/lyzqm123/deep_learning_operations/blob/master/src/operation/quantization/quantization.hpp)|
   |DeQuantization|[src/operation/quantization/dequantization.hpp](https://github.com/lyzqm123/deep_learning_operations/blob/master/src/operation/quantization/dequantization.hpp)|
 
 
 - **Google test**
   - `./dl_operations_gtest` 
-  - ![unittest](https://user-images.githubusercontent.com/22426868/168457065-c2a873e7-8bf9-4a2f-a403-48f4c832fec4.png)
+  - ![unittest](https://user-images.githubusercontent.com/22426868/168610945-c180ed16-7519-480f-b99d-34be85930c6e.png)
