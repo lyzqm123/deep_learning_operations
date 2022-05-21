@@ -19,8 +19,11 @@ set(SRC_FILES
 )
 include_directories(${DIR})
 
+add_subdirectory(pybind11)
 add_executable (${BINARY} ${SRC_FILES})
 add_library(${BINARY}_lib STATIC ${SRC_FILES})
+
+pybind11_add_module(fastop fastop.cpp)
 
 target_compile_options(${BINARY} PUBLIC -Wall -Werror)
 target_include_directories(${BINARY} PUBLIC ${DIR})
