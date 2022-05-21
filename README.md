@@ -6,10 +6,11 @@
 
 - **Build**
   1. `git clone https://github.com/lyzqm123/fast_deep_learning_inference.git`
-  2. `cd fast_deep_learning_inference`
+  2. `cd fast_deep_learning_inference/src`
   3. `git clone https://github.com/pybind/pybind11.git`
-  4. `cmake CMakeLists.txt`
-  5. `make`
+  4. `cd ../` 
+  5. `cmake CMakeLists.txt`
+  6. `make`
 <br></br>
 
 - **Supported operations**
