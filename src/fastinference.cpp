@@ -20,7 +20,7 @@ void declare_tensor(py::module &m, std::string pyclass_name)
         .def("size", &Class::size);
 }
 
-PYBIND11_MODULE(fastop, m)
+PYBIND11_MODULE(fastinference, m)
 {
     declare_tensor<float>(m, "TensorFloat");
 
