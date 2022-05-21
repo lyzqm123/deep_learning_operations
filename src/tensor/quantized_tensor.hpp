@@ -3,11 +3,14 @@
 #include "tensor.hpp"
 
 template <typename Q, typename DQ>
-class QuantizedTensor : public Tensor<Q>
+class QuantizedTensor : public Tensor<DQ>
 {
 public:
-    QuantizedTensor(const std::string &name) : Tensor<Q>(name) {}
-    QuantizedTensor(const std::string &name, const std::vector<int> &dimension) : Tensor<Q>(name, dimension) {}
+    QuantizedTensor(const std::string &name) : Tensor<DQ>(name) {}
+    QuantizedTensor(const std::string &name, const std::vector<int> &dimension) : Tensor<DQ>(name, dimension) {}
+    QuantizedTensor(const std::string &name, const std::vector<int> &dimension, const std::string &distribution_type) : Tensor<DQ>(name, dimension, distribution_type) {}
+    QuantizedTensor(const std::string &name, const std::vector<int> &dimension, const std::vector<DQ> &init_tensor) : Tensor<DQ>(name, dimension, init_tensor) {}
+    QuantizedTensor(const std::string &name, const std::initializer_list<int> &dimension, const std::initializer_list<DQ> &init_tensor) : Tensor<DQ>(name, dimension, init_tensor) {}
 
     void set_scale(Q scale)
     {

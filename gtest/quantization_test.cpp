@@ -15,7 +15,7 @@ TEST(fp32_to_uint8_quantization_and_dequantization_test, CheckQuantizationDequan
     std::cout << weights << "\n";
 
     const QuantizedTensor<QType, DQType> uint8_weights = quantization::quantization<QType, DQType>(weights, "quantized_weights");
-    const auto uint8_weights_vector = uint8_weights.get_tensor();
+    const auto uint8_weights_vector = uint8_weights.get_serialized_tensor();
     for (const auto &uint8_weight : uint8_weights_vector)
     {
         EXPECT_TRUE(0 <= uint8_weight && uint8_weight <= 255);
@@ -41,7 +41,7 @@ TEST(fp32_to_uint8_quantization_and_dequantization_test, CheckQuantizationDequan
     std::cout << weights << "\n";
 
     const QuantizedTensor<QType, DQType> uint8_weights = quantization::quantization<QType, DQType>(weights, "quantized_weights");
-    const auto uint8_weights_vector = uint8_weights.get_tensor();
+    const auto &uint8_weights_vector = uint8_weights.get_serialized_tensor();
     for (const auto &uint8_weight : uint8_weights_vector)
     {
         EXPECT_TRUE(0 <= uint8_weight && uint8_weight <= 255);
