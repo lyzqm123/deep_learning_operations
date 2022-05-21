@@ -16,9 +16,7 @@ void declare_tensor(py::module &m, std::string pyclass_name)
         .def(py::init<const std::string &, const std::vector<int> &, const std::string &>())
         .def("get_dimension", &Class::get_dimension)
         .def("get_tensor", &Class::get_tensor)
-        .def("get_2d_tensor", &Class::get_2d_tensor)
         .def("get_name", &Class::get_name)
-        .def("append", &Class::push_back)
         .def("size", &Class::size);
 }
 
