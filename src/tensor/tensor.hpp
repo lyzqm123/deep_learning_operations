@@ -131,7 +131,7 @@ public:
 						for (int t = 0; t < dimension[3]; t++)
 						{
 							auto value = tensor_v[i][j][k][t];
-							std::cout << value << " ";
+							std::cout << (float)value << " ";
 						}
 					}
 				}
@@ -157,6 +157,25 @@ public:
 	std::string get_name() const
 	{
 		return this->name_;
+	}
+	std::vector<T> get_serialized_tensor() const
+	{
+		std::vector<T> output;
+		for (int i = 0; i < dimension_[0]; i++)
+		{
+			for (int j = 0; j < dimension_[1]; j++)
+			{
+				for (int k = 0; k < dimension_[2]; k++)
+				{
+					for (int t = 0; t < dimension_[3]; t++)
+					{
+						const T &value = this->tensor_[i][j][k][t];
+						output.push_back(value);
+					}
+				}
+			}
+		}
+		return output;
 	}
 
 	int size() const

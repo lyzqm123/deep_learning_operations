@@ -40,21 +40,21 @@ namespace quantization
 	{
 		try
 		{
-			QuantizedTensor<QType, DQType> quantized_tensor(name, weights.get_dimension());
-
 			int bit = get_bit<DQType>();
 
 			QType scale = (QType)((max_value - min_value) / (QType)((1 << bit) - 1));
 			DQType offset = (DQType)((-min_value) / scale + 0.5);
-			quantized_tensor.set_scale(scale);
-			quantized_tensor.set_offset(offset);
 
-			auto weights_vector = weights.get_tensor();
+			const std::vector<QType> &weights_vector = weights.get_serialized_tensor();
+			std::vector<DQType> output;
 			for (const auto &weight : weights_vector)
 			{
 				DQType quantized_weight = (DQType)(weight / scale + (float)offset + 0.5);
-				quantized_tensor.push_back(quantized_weight);
+				output.push_back(quantized_weight);
 			}
+			QuantizedTensor<QType, DQType> quantized_tensor(name, weights.get_dimension(), output);
+			quantized_tensor.set_scale(scale);
+			quantized_tensor.set_offset(offset);
 			return quantized_tensor;
 		}
 		catch (const std::exception &e)
@@ -71,7 +71,7 @@ namespace quantization
 
 		try
 		{
-			const auto &weights_vector = weights.get_tensor();
+			const std::vector<QType> &weights_vector = weights.get_serialized_tensor();
 			QType min_value = *std::min_element(weights_vector.begin(), weights_vector.end());
 			QType max_value = *std::max_element(weights_vector.begin(), weights_vector.end());
 			return quantization<QType, DQType>(weights, name, min_value, max_value);

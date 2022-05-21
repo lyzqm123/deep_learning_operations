@@ -5,7 +5,7 @@ file(GLOB_RECURSE TEST_SOURCES LIST_DIRECTORIES false *.hpp *.cpp)
 
 include_directories(${CMAKE_SOURCE_DIR}/src/
                     ${CMAKE_SOURCE_DIR}/src/operation
-                    # ${CMAKE_SOURCE_DIR}/src/operation/quantization
+                    ${CMAKE_SOURCE_DIR}/src/operation/quantization
                     ${CMAKE_SOURCE_DIR}/src/operation/conv
                     ${CMAKE_SOURCE_DIR}/src/tensor)
 
