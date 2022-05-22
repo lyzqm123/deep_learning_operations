@@ -47,7 +47,7 @@ public:
 		}
 		else if (distribution_type == "ones" || distribution_type == "zeros")
 		{
-			tensor_vector temp_tensor(dimension_[0], std::vector<std::vector<std::vector<T>>>(dimension_[1], std::vector<std::vector<T>>(dimension_[2], std::vector<T>(dimension_[3], distribution_type == "ones" ? (T)1 : (T)0))));
+			tensor_vector temp_tensor(dimension_[0], std::vector<std::vector<std::vector<T>>>(dimension_[3], std::vector<std::vector<T>>(dimension_[1], std::vector<T>(dimension_[2], distribution_type == "ones" ? (T)1 : (T)0))));
 			this->tensor_ = std::move(temp_tensor);
 		}
 	}
