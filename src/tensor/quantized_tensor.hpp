@@ -6,11 +6,11 @@ template <typename Q, typename DQ>
 class QuantizedTensor : public Tensor<DQ>
 {
 public:
-    QuantizedTensor(const std::string &name) : Tensor<DQ>(name) {}
-    QuantizedTensor(const std::string &name, const std::vector<int> &dimension) : Tensor<DQ>(name, dimension) {}
-    QuantizedTensor(const std::string &name, const std::vector<int> &dimension, const std::string &distribution_type) : Tensor<DQ>(name, dimension, distribution_type) {}
-    QuantizedTensor(const std::string &name, const std::vector<int> &dimension, const std::vector<DQ> &init_tensor) : Tensor<DQ>(name, dimension, init_tensor) {}
-    QuantizedTensor(const std::string &name, const std::initializer_list<int> &dimension, const std::initializer_list<DQ> &init_tensor) : Tensor<DQ>(name, dimension, init_tensor) {}
+    QuantizedTensor(std::string name) : Tensor<DQ>(name) {}
+    QuantizedTensor(std::string name, std::vector<int> dimension) : Tensor<DQ>(name, dimension) {}
+    QuantizedTensor(std::string name, std::vector<int> dimension, std::string distribution_type) : Tensor<DQ>(name, dimension, distribution_type) {}
+    QuantizedTensor(std::string name, std::vector<int> dimension, const std::vector<DQ> &init_tensor) : Tensor<DQ>(name, dimension, init_tensor) {}
+    QuantizedTensor(std::string name, std::initializer_list<int> dimension, const std::initializer_list<DQ> &init_tensor) : Tensor<DQ>(name, dimension, init_tensor) {}
 
     void set_scale(Q scale)
     {

@@ -38,7 +38,7 @@ namespace conv
                             {
                                 for (int k_col = 0; k_col < kernel_4d_col; k_col++)
                                 {
-                                    T value = inputs_4d[i_batch][i_row + k_row][i_col + k_col][i_channel] * kernel_4d[i_batch][k_row][k_col][i_channel];
+                                    T value = inputs_4d[i_batch][i_channel][i_row + k_row][i_col + k_col] * kernel_4d[i_batch][i_channel][k_row][k_col];
                                     sum += value;
                                 }
                             }

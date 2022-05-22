@@ -14,8 +14,8 @@ public:
 	using tensor_vector = std::vector<std::vector<std::vector<std::vector<T>>>>;
 
 	Tensor() = delete;
-	Tensor(const std::string &name) { this->name_ = name; }
-	Tensor(const std::string &name, const std::vector<int> &dimension, const std::string &distribution_type) : Tensor(name, dimension)
+	Tensor(std::string name) { this->name_ = name; }
+	Tensor(std::string name, std::vector<int> dimension, std::string distribution_type) : Tensor(name, dimension)
 	{
 		if (distribution_type == "gaussian")
 		{
@@ -27,13 +27,13 @@ public:
 			for (int i = 0; i < dimension_[0]; i++)
 			{
 				std::vector<std::vector<std::vector<T>>> tensor_3d;
-				for (int j = 0; j < dimension_[1]; j++)
+				for (int t = 0; t < dimension_[3]; t++)
 				{
 					std::vector<std::vector<T>> tensor_2d;
-					for (int k = 0; k < dimension_[2]; k++)
+					for (int j = 0; j < dimension_[1]; j++)
 					{
 						std::vector<T> tensor_1d;
-						for (int t = 0; t < dimension_[3]; t++)
+						for (int k = 0; k < dimension_[2]; k++)
 						{
 							tensor_1d.push_back(distribution(generator));
 						}
@@ -52,19 +52,19 @@ public:
 		}
 	}
 
-	Tensor(const std::string &name, const std::vector<int> &dimension, const std::vector<T> &init_tensor) : Tensor(name, dimension)
+	Tensor(std::string name, std::vector<int> dimension, const std::vector<T> &init_tensor) : Tensor(name, dimension)
 	{
 		std::vector<std::vector<std::vector<std::vector<T>>>> tensor_4d;
 		for (int i = 0; i < dimension_[0]; i++)
 		{
 			std::vector<std::vector<std::vector<T>>> tensor_3d;
-			for (int j = 0; j < dimension_[1]; j++)
+			for (int t = 0; t < dimension_[3]; t++)
 			{
 				std::vector<std::vector<T>> tensor_2d;
-				for (int k = 0; k < dimension_[2]; k++)
+				for (int j = 0; j < dimension_[1]; j++)
 				{
 					std::vector<T> tensor_1d;
-					for (int t = 0; t < dimension_[3]; t++)
+					for (int k = 0; k < dimension_[2]; k++)
 					{
 						auto value = init_tensor[i * dimension_[1] * dimension_[2] * dimension_[3] + j * dimension_[2] * dimension_[3] + k * dimension_[3] + t];
 						tensor_1d.push_back(value);
@@ -78,20 +78,20 @@ public:
 		this->tensor_ = std::move(tensor_4d);
 	}
 
-	Tensor(const std::string &name, const std::initializer_list<int> &dimension, const std::initializer_list<T> &init_tensor) : Tensor(name, dimension)
+	Tensor(std::string name, std::initializer_list<int> dimension, const std::initializer_list<T> &init_tensor) : Tensor(name, dimension)
 	{
 		std::vector<std::vector<std::vector<std::vector<T>>>> tensor_4d;
 		auto iter = init_tensor.begin();
 		for (int i = 0; i < dimension_[0]; i++)
 		{
 			std::vector<std::vector<std::vector<T>>> tensor_3d;
-			for (int j = 0; j < dimension_[1]; j++)
+			for (int t = 0; t < dimension_[3]; t++)
 			{
 				std::vector<std::vector<T>> tensor_2d;
-				for (int k = 0; k < dimension_[2]; k++)
+				for (int j = 0; j < dimension_[1]; j++)
 				{
 					std::vector<T> tensor_1d;
-					for (int t = 0; t < dimension_[3]; t++)
+					for (int k = 0; k < dimension_[2]; k++)
 					{
 						auto value = *iter;
 						tensor_1d.push_back(value);
@@ -124,13 +124,13 @@ public:
 			std::cout << "  [ ";
 			for (int i = 0; i < dimension[0]; i++)
 			{
-				for (int j = 0; j < dimension[1]; j++)
+				for (int t = 0; t < dimension[3]; t++)
 				{
-					for (int k = 0; k < dimension[2]; k++)
+					for (int j = 0; j < dimension[1]; j++)
 					{
-						for (int t = 0; t < dimension[3]; t++)
+						for (int k = 0; k < dimension[2]; k++)
 						{
-							auto value = tensor_v[i][j][k][t];
+							auto value = tensor_v[i][t][j][k];
 							std::cout << (float)value << " ";
 						}
 					}
@@ -159,19 +159,52 @@ public:
 		return this->name_;
 	}
 	std::vector<T> get_serialized_tensor() const
-	{
+	{	
+		// NHWC
 		std::vector<T> output;
 		for (int i = 0; i < dimension_[0]; i++)
 		{
-			for (int j = 0; j < dimension_[1]; j++)
+			for (int t = 0; t < dimension_[3]; t++)
 			{
-				for (int k = 0; k < dimension_[2]; k++)
+				for (int j = 0; j < dimension_[1]; j++)
 				{
-					for (int t = 0; t < dimension_[3]; t++)
+					for (int k = 0; k < dimension_[2]; k++)
 					{
-						const T &value = this->tensor_[i][j][k][t];
-						output.push_back(value);
+						output.push_back(this->tensor_[i][t][j][k]);
 					}
+				}
+			}
+		}
+		return std::move(output);
+	}
+
+	std::vector<std::vector<T>> get_im2col(int kernel_row, int kernel_height, int stride = 1, int padding = 0) const
+	{
+		std::vector<std::vector<T>> output;
+		int inputs_batch = this->dimension_[0];
+		int inputs_row = this->dimension_[1];
+		int inputs_col = this->dimension_[2];
+		int inputs_channel = this->dimension_[3];
+
+		int output_dimension = (inputs_row + 2 * padding - kernel_row) / stride + 1;
+		for (int i_row = 0; i_row < output_dimension; i_row += stride)
+		{
+			for (int i_col = 0; i_col < output_dimension; i_col += stride)
+			{
+				std::vector<T> temp;
+				for (int i_batch = 0; i_batch < inputs_batch; i_batch++)
+				{
+					for (int i_channel = 0; i_channel < inputs_channel; i_channel++)
+					{
+						for (int k_row = 0; k_row < kernel_row; k_row++)
+						{
+							for (int k_col = 0; k_col < kernel_height; k_col++)
+							{
+								temp.push_back(this->tensor_[i_batch][i_channel][i_row + k_row][i_col + k_col]);
+							}
+						}
+					}
+					output.push_back(temp);
 				}
 			}
 		}
