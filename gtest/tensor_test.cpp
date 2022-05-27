@@ -1,6 +1,26 @@
 #include "gtest/gtest.h"
 #include "tensor.hpp"
 
+TEST(tensorTest, CheckTensorInitialization)
+{
+    Tensor<float> float_inputs("float_inputs", {2, 2, 2, 1}, "ones");
+    Tensor<int> int_inputs("int_inputs", {2, 2, 2, 1}, "ones");
+
+    const std::vector<int> expected_int_inputs = {1, 1, 1, 1, 1, 1, 1, 1};
+
+    const auto &serialized_int_inputs = int_inputs.get_serialized_tensor();
+    const auto &serialized_float_inputs = float_inputs.get_serialized_tensor();
+
+    EXPECT_EQ(serialized_float_inputs.size(), serialized_int_inputs.size());
+    EXPECT_EQ(serialized_float_inputs.size(), expected_int_inputs.size());
+
+    for (size_t i = 0; i < expected_int_inputs.size(); i++)
+    {
+        EXPECT_EQ(expected_int_inputs[i], serialized_int_inputs[i]);
+        EXPECT_EQ((float)expected_int_inputs[i], serialized_float_inputs[i]);
+    }
+}
+
 TEST(tensorTest, CheckIm2ColOutputDimensionIsFine)
 {
     using TensorType = int;
@@ -47,7 +67,6 @@ TEST(tensorTest, CheckSerializedTensor)
 
     const auto &serialized_inputs = inputs.get_serialized_tensor();
     ASSERT_EQ(18, (int)serialized_inputs.size());
-
 
     Tensor<TensorType> inputs2("inputs2", {2, 3, 3, 1}, {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, -1, -2, -3, -4, -5, -6, -7, -8});
 
