@@ -21,7 +21,7 @@ public:
 		{
 			std::random_device device_random_;
 			std::default_random_engine generator(device_random_());
-			std::normal_distribution<T> distribution(0, 1);
+			std::normal_distribution<> distribution(0, 1);
 
 			std::vector<std::vector<std::vector<std::vector<T>>>> tensor_4d;
 			for (int i = 0; i < dimension_[0]; i++)
@@ -178,36 +178,47 @@ public:
 		return std::move(output);
 	}
 
-	std::vector<std::vector<T>> get_im2col(int kernel_row, int kernel_height, int stride = 1, int padding = 0) const
+	std::vector<std::vector<T>> get_im2col(int kernel_row, int kernel_col, int stride = 1, int padding = 0) const
 	{
-		std::vector<std::vector<T>> output;
 		int inputs_batch = this->dimension_[0];
 		int inputs_row = this->dimension_[1];
 		int inputs_col = this->dimension_[2];
 		int inputs_channel = this->dimension_[3];
 
 		int output_dimension = (inputs_row + 2 * padding - kernel_row) / stride + 1;
-		for (int i_row = 0; i_row < output_dimension; i_row += stride)
+		int out_row = output_dimension * output_dimension;
+		int out_col = kernel_row * kernel_col * inputs_channel;
+		std::vector<std::vector<T>> output(out_row, std::vector<T>(out_col, 0));
+
+		/* Referenced from `https://github.com/intel/caffe/blob/master/src/caffe/util/im2col.cpp#L94-L123` */
+		for (int out_w = 0; out_w < out_col; ++out_w)
 		{
-			for (int i_col = 0; i_col < output_dimension; i_col += stride)
+			int w_offset = out_w % kernel_col;
+			int h_offset = (out_w / kernel_col) % kernel_row;
+			int c_im = out_w / kernel_row / kernel_col;
+
+			const int hc0 = h_offset - padding;
+			const int wc0 = w_offset - padding;
+			for (int h = 0; h < output_dimension; ++h)
 			{
-				std::vector<T> temp;
-				for (int i_batch = 0; i_batch < inputs_batch; i_batch++)
+				int h_pad = h * stride + hc0;
+
+				const int row_offset = (out_w * output_dimension + h); // * output_dimension;
+				const int srow_offset = (c_im * inputs_row + h_pad); // * inputs_col;
+				for (int w = 0; w < output_dimension; ++w)
 				{
-					for (int i_channel = 0; i_channel < inputs_channel; i_channel++)
-					{
-						for (int k_row = 0; k_row < kernel_row; k_row++)
-						{
-							for (int k_col = 0; k_col < kernel_height; k_col++)
-							{
-								temp.push_back(this->tensor_[i_batch][i_channel][i_row + k_row][i_col + k_col]);
-							}
-						}
+					int w_pad = w * stride + wc0;
+					if ((((unsigned)h_pad) < ((unsigned)inputs_row)) && (((unsigned)w_pad) < ((unsigned)inputs_col))){
+						output[h * output_dimension + w][out_w] = this->tensor_[0][c_im][h_pad][w_pad];
 					}
-					output.push_back(temp);
+					else
+					{
+						output[h * output_dimension + w][out_w] = 0.0;
+					}
 				}
 			}
 		}
+
 		return output;
 	}
 
