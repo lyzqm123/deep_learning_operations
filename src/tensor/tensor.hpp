@@ -92,6 +92,32 @@ public:
 		}
 		this->tensor_ = origin;
 	}
+	Tensor(const std::string &name, const std::vector<int> &dimension) : Tensor(name)
+	{
+		if (dimension.empty() || dimension.size() == 3 || dimension.size() > 4)
+		{
+			throw std::runtime_error("[ERROR] Please check the dimension size (" + std::to_string(dimension.size()) + ")...");
+		}
+		if (dimension.size() <= 2)
+		{
+			this->dimension_ = {1, dimension[0], dimension[dimension.size() - 1], 1};
+		}
+		else
+		{
+			this->dimension_ = dimension;
+		}
+
+		this->tensor_ = new T[dimension_[0] * dimension_[1] * dimension_[2] * dimension_[3]];
+	}
+
+	Tensor(const Tensor &other) : Tensor(other.name_, other.dimension_)
+	{
+		const auto &other_dimension = other.dimension_;
+		int other_dimension_size = other_dimension[0] * other_dimension[1] * other_dimension[2] * other_dimension[3];
+		T *other_tensor = other.get_tensor();
+
+		std::copy(other_tensor, other_tensor + other_dimension_size, this->tensor_);
+	}
 	~Tensor()
 	{
 		delete[] this->tensor_;
@@ -224,37 +250,6 @@ public:
 			dim *= dimension;
 		}
 		return dim;
-	}
-
-protected:
-	Tensor(const std::string &name, const std::vector<int> &dimension) : Tensor(name)
-	{
-		if (dimension.empty() || dimension.size() == 3 || dimension.size() > 4)
-		{
-			throw std::runtime_error("[ERROR] Please check the dimension size (" + std::to_string(dimension.size()) + ")...");
-		}
-		if (dimension.size() <= 2)
-		{
-			this->dimension_ = {1, dimension[0], dimension[dimension.size() - 1], 1};
-		}
-		else
-		{
-			this->dimension_ = dimension;
-		}
-
-		this->tensor_ = new T[dimension_[0] * dimension_[1] * dimension_[2] * dimension_[3]];
-	}
-
-	Tensor(const Tensor &other)
-	{
-		const auto &other_dimension = other.dimension_;
-		int other_dimension_size = other_dimension[0] * other_dimension[1] * other_dimension[2] * other_dimension[3];
-		T *other_tensor = other.get_tensor();
-
-		this->tensor_ = new T[other_dimension_size];
-		this->dimension_ = other.dimension_;
-		this->name_ = other.name_;
-		std::copy(other_tensor, other_tensor + other_dimension_size, this->tensor_);
 	}
 
 protected:
