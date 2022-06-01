@@ -38,7 +38,7 @@ public:
 		}
 		else 
 		{
-			int dimension_size = dimension[0] * dimension[1] * dimension[2] * dimension[3];
+			int dimension_size = this->dimension_[0] * this->dimension_[1] * this->dimension_[2] * this->dimension_[3];
 			if (distribution_type == "ones")
 			{
 				std::fill(this->tensor_, this->tensor_ + dimension_size, (T)1);
