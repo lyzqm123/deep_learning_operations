@@ -227,7 +227,7 @@ public:
 				{
 					int w_pad = w * stride + wc0;
 					if ((((unsigned)h_pad) < ((unsigned)inputs_row)) && (((unsigned)w_pad) < ((unsigned)inputs_col))){
-						output[h * output_dimension + w][out_w] = this->tensor_[0][c_im][h_pad][w_pad];
+						output[h * output_dimension + w][out_w] = this->tensor_[((0 * inputs_channel + c_im) * inputs_row + h_pad) * inputs_col + w_pad];
 					}
 					else
 					{
