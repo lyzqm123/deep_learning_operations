@@ -23,7 +23,7 @@ namespace quantization
                 output.push_back(dequantized_weight);
             }
             Tensor<QType> dequantized_tensor(name, quantized_weights.get_dimension(), output);
-            return dequantized_tensor;
+            return std::move(dequantized_tensor);
         }
         catch (const std::exception &e)
         {

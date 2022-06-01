@@ -55,7 +55,7 @@ namespace quantization
 			QuantizedTensor<QType, DQType> quantized_tensor(name, weights.get_dimension(), output);
 			quantized_tensor.set_scale(scale);
 			quantized_tensor.set_offset(offset);
-			return quantized_tensor;
+			return std::move(quantized_tensor);
 		}
 		catch (const std::exception &e)
 		{
@@ -74,7 +74,7 @@ namespace quantization
 			const std::vector<QType> &weights_vector = weights.get_serialized_tensor();
 			QType min_value = *std::min_element(weights_vector.begin(), weights_vector.end());
 			QType max_value = *std::max_element(weights_vector.begin(), weights_vector.end());
-			return quantization<QType, DQType>(weights, name, min_value, max_value);
+			return std::move(quantization<QType, DQType>(weights, name, min_value, max_value));
 		}
 		catch (const std::exception &e)
 		{

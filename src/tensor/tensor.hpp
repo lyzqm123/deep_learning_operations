@@ -1,5 +1,5 @@
 #pragma once
-
+#include <cstring>
 #include <vector>
 #include <string>
 #include <iomanip>
@@ -11,8 +11,6 @@ template <typename T>
 class Tensor
 {
 public:
-	using tensor_vector = std::vector<std::vector<std::vector<std::vector<T>>>>;
-
 	Tensor() = delete;
 	Tensor(std::string name) { this->name_ = name; }
 	Tensor(std::string name, std::vector<int> dimension, std::string distribution_type) : Tensor(name, dimension)
@@ -22,88 +20,107 @@ public:
 			std::random_device device_random_;
 			std::default_random_engine generator(device_random_());
 			std::normal_distribution<> distribution(0, 1);
-
-			std::vector<std::vector<std::vector<std::vector<T>>>> tensor_4d;
-			for (int i = 0; i < dimension_[0]; i++)
+			T *origin = this->tensor_;
+			for (int b = 0; b < dimension_[0]; b++)
 			{
-				std::vector<std::vector<std::vector<T>>> tensor_3d;
-				for (int t = 0; t < dimension_[3]; t++)
+				for (int c = 0; c < dimension_[3]; c++)
 				{
-					std::vector<std::vector<T>> tensor_2d;
-					for (int j = 0; j < dimension_[1]; j++)
+					for (int h = 0; h < dimension_[1]; h++)
 					{
-						std::vector<T> tensor_1d;
-						for (int k = 0; k < dimension_[2]; k++)
+						for (int w = 0; w < dimension_[2]; w++)
 						{
-							tensor_1d.push_back(distribution(generator));
+							*(this->tensor_++) = distribution(generator);
 						}
-						tensor_2d.push_back(tensor_1d);
 					}
-					tensor_3d.push_back(tensor_2d);
 				}
-				tensor_4d.push_back(tensor_3d);
 			}
-			this->tensor_ = std::move(tensor_4d);
+			this->tensor_ = origin;
 		}
-		else if (distribution_type == "ones" || distribution_type == "zeros")
+		else 
 		{
-			tensor_vector temp_tensor(dimension_[0], std::vector<std::vector<std::vector<T>>>(dimension_[3], std::vector<std::vector<T>>(dimension_[1], std::vector<T>(dimension_[2], distribution_type == "ones" ? (T)1 : (T)0))));
-			this->tensor_ = std::move(temp_tensor);
+			int dimension_size = dimension[0] * dimension[1] * dimension[2] * dimension[3];
+			if (distribution_type == "ones")
+			{
+				std::fill(this->tensor_, this->tensor_ + dimension_size, (T)1);
+			}
+			else if (distribution_type == "zeros")
+			{
+				std::memset(this->tensor_, (T)0, sizeof (*this->tensor_) * dimension_size);
+			}
 		}
 	}
 
 	Tensor(std::string name, std::vector<int> dimension, const std::vector<T> &init_tensor) : Tensor(name, dimension)
 	{
-		std::vector<std::vector<std::vector<std::vector<T>>>> tensor_4d;
-		for (int i = 0; i < dimension_[0]; i++)
+		T *origin = this->tensor_;
+		for (int b = 0; b < dimension_[0]; b++)
 		{
 			std::vector<std::vector<std::vector<T>>> tensor_3d;
-			for (int t = 0; t < dimension_[3]; t++)
+			for (int c = 0; c < dimension_[3]; c++)
 			{
 				std::vector<std::vector<T>> tensor_2d;
-				for (int j = 0; j < dimension_[1]; j++)
+				for (int h = 0; h < dimension_[1]; h++)
 				{
 					std::vector<T> tensor_1d;
-					for (int k = 0; k < dimension_[2]; k++)
+					for (int w = 0; w < dimension_[2]; w++)
 					{
-						auto value = init_tensor[i * dimension_[1] * dimension_[2] * dimension_[3] + j * dimension_[2] * dimension_[3] + k * dimension_[3] + t];
-						tensor_1d.push_back(value);
+						*(this->tensor_++) = init_tensor[((b * dimension_[3] + c) * dimension_[1] + h) * dimension_[2] + w];
 					}
-					tensor_2d.push_back(tensor_1d);
 				}
-				tensor_3d.push_back(tensor_2d);
 			}
-			tensor_4d.push_back(tensor_3d);
 		}
-		this->tensor_ = std::move(tensor_4d);
+		this->tensor_ = origin;
 	}
 
 	Tensor(std::string name, std::initializer_list<int> dimension, const std::initializer_list<T> &init_tensor) : Tensor(name, dimension)
 	{
-		std::vector<std::vector<std::vector<std::vector<T>>>> tensor_4d;
+		T *origin = this->tensor_;
 		auto iter = init_tensor.begin();
-		for (int i = 0; i < dimension_[0]; i++)
+		for (int b = 0; b < dimension_[0]; b++)
 		{
-			std::vector<std::vector<std::vector<T>>> tensor_3d;
-			for (int t = 0; t < dimension_[3]; t++)
+			for (int c = 0; c < dimension_[3]; c++)
 			{
-				std::vector<std::vector<T>> tensor_2d;
-				for (int j = 0; j < dimension_[1]; j++)
+				for (int h = 0; h < dimension_[1]; h++)
 				{
-					std::vector<T> tensor_1d;
-					for (int k = 0; k < dimension_[2]; k++)
+					for (int w = 0; w < dimension_[2]; w++)
 					{
-						auto value = *iter;
-						tensor_1d.push_back(value);
+						*(this->tensor_++) = *iter;
 						++iter;
 					}
-					tensor_2d.push_back(tensor_1d);
 				}
-				tensor_3d.push_back(tensor_2d);
 			}
-			tensor_4d.push_back(tensor_3d);
 		}
-		this->tensor_ = std::move(tensor_4d);
+		this->tensor_ = origin;
+	}
+	Tensor(const std::string &name, const std::vector<int> &dimension) : Tensor(name)
+	{
+		if (dimension.empty() || dimension.size() == 3 || dimension.size() > 4)
+		{
+			throw std::runtime_error("[ERROR] Please check the dimension size (" + std::to_string(dimension.size()) + ")...");
+		}
+		if (dimension.size() <= 2)
+		{
+			this->dimension_ = {1, dimension[0], dimension[dimension.size() - 1], 1};
+		}
+		else
+		{
+			this->dimension_ = dimension;
+		}
+
+		this->tensor_ = new T[dimension_[0] * dimension_[1] * dimension_[2] * dimension_[3]];
+	}
+
+	Tensor(const Tensor &other) : Tensor(other.name_, other.dimension_)
+	{
+		const auto &other_dimension = other.dimension_;
+		int other_dimension_size = other_dimension[0] * other_dimension[1] * other_dimension[2] * other_dimension[3];
+		T *other_tensor = other.get_tensor();
+
+		std::copy(other_tensor, other_tensor + other_dimension_size, this->tensor_);
+	}
+	~Tensor()
+	{
+		delete[] this->tensor_;
 	}
 
 	friend std::ostream &operator<<(std::ostream &os, const Tensor &tensor)
@@ -122,16 +139,17 @@ public:
 		try
 		{
 			std::cout << "  [ ";
-			for (int i = 0; i < dimension[0]; i++)
+			for (int b = 0; b < dimension[0]; b++)
 			{
-				for (int t = 0; t < dimension[3]; t++)
+				for (int c = 0; c < dimension[3]; c++)
 				{
-					for (int j = 0; j < dimension[1]; j++)
+					for (int h = 0; h < dimension[1]; h++)
 					{
-						for (int k = 0; k < dimension[2]; k++)
+						for (int w = 0; w < dimension[2]; w++)
 						{
-							auto value = tensor_v[i][t][j][k];
+							auto value = tensor_v[((b * dimension[3] + c) * dimension[1] + h) * dimension[2] + w];
 							std::cout << (float)value << " ";
+							
 						}
 					}
 				}
@@ -150,7 +168,7 @@ public:
 	{
 		return this->dimension_;
 	}
-	tensor_vector get_tensor() const
+	T* get_tensor() const
 	{
 		return this->tensor_;
 	}
@@ -162,15 +180,15 @@ public:
 	{	
 		// NHWC
 		std::vector<T> output;
-		for (int i = 0; i < dimension_[0]; i++)
+		for (int b = 0; b < dimension_[0]; b++)
 		{
-			for (int t = 0; t < dimension_[3]; t++)
+			for (int c = 0; c < dimension_[3]; c++)
 			{
-				for (int j = 0; j < dimension_[1]; j++)
+				for (int h = 0; h < dimension_[1]; h++)
 				{
-					for (int k = 0; k < dimension_[2]; k++)
+					for (int w = 0; w < dimension_[2]; w++)
 					{
-						output.push_back(this->tensor_[i][t][j][k]);
+						output.push_back(this->tensor_[((b * dimension_[3] + c) * dimension_[1] + h) * dimension_[2] + w]);
 					}
 				}
 			}
@@ -209,7 +227,7 @@ public:
 				{
 					int w_pad = w * stride + wc0;
 					if ((((unsigned)h_pad) < ((unsigned)inputs_row)) && (((unsigned)w_pad) < ((unsigned)inputs_col))){
-						output[h * output_dimension + w][out_w] = this->tensor_[0][c_im][h_pad][w_pad];
+						output[h * output_dimension + w][out_w] = this->tensor_[((0 * inputs_channel + c_im) * inputs_row + h_pad) * inputs_col + w_pad];
 					}
 					else
 					{
@@ -234,25 +252,8 @@ public:
 		return dim;
 	}
 
-private:
-	Tensor(const std::string &name, const std::vector<int> &dimension) : Tensor(name)
-	{
-		if (dimension.empty() || dimension.size() == 3 || dimension.size() > 4)
-		{
-			throw std::runtime_error("[ERROR] Please check the dimension size (" + std::to_string(dimension.size()) + ")...");
-		}
-		if (dimension.size() <= 2)
-		{
-			this->dimension_ = {1, dimension[0], dimension[dimension.size() - 1], 1};
-		}
-		else
-		{
-			this->dimension_ = dimension;
-		}
-	}
-
 protected:
 	std::string name_ = "";
-	tensor_vector tensor_;
+	T *tensor_ = nullptr;
 	std::vector<int> dimension_;
 };

@@ -25,6 +25,7 @@ namespace conv
 
             int kernel_4d_row = kernel_dim[1];
             int kernel_4d_col = kernel_dim[2];
+            int kernel_4d_channel = kernel_dim[3];
 
             std::vector<T> output;
             for (int i_batch = 0; i_batch < inputs_4d_batch; i_batch++)
@@ -42,7 +43,8 @@ namespace conv
                                 {
                                     for (int k_col = 0; k_col < kernel_4d_col; k_col++)
                                     {
-                                        T value = inputs_4d[i_batch][i_channel][i_row + k_row][i_col + k_col] * kernel_4d[i_batch][i_channel][k_row][k_col];
+                                        T value = inputs_4d[((i_batch * inputs_4d_channel + i_channel) * inputs_4d_row + i_row + k_row) * inputs_4d_col + i_col + k_col] *
+                                                  kernel_4d[((i_batch * kernel_4d_channel + i_channel) * kernel_4d_row + k_row) * kernel_4d_col + k_col];
                                         sum += value;
                                     }
                                 }
