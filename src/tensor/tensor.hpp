@@ -20,7 +20,7 @@ public:
 			std::random_device device_random_;
 			std::default_random_engine generator(device_random_());
 			std::normal_distribution<> distribution(0, 1);
-
+			T *origin = this->tensor_;
 			for (int b = 0; b < dimension_[0]; b++)
 			{
 				for (int c = 0; c < dimension_[3]; c++)
@@ -34,6 +34,7 @@ public:
 					}
 				}
 			}
+			this->tensor_ = origin;
 		}
 		else 
 		{
@@ -51,6 +52,7 @@ public:
 
 	Tensor(std::string name, std::vector<int> dimension, const std::vector<T> &init_tensor) : Tensor(name, dimension)
 	{
+		T *origin = this->tensor_;
 		for (int b = 0; b < dimension_[0]; b++)
 		{
 			std::vector<std::vector<std::vector<T>>> tensor_3d;
@@ -67,6 +69,7 @@ public:
 				}
 			}
 		}
+		this->tensor_ = origin;
 	}
 
 	Tensor(std::string name, std::initializer_list<int> dimension, const std::initializer_list<T> &init_tensor) : Tensor(name, dimension)
@@ -88,6 +91,10 @@ public:
 			}
 		}
 		this->tensor_ = origin;
+	}
+	~Tensor()
+	{
+		delete[] this->tensor_;
 	}
 
 	friend std::ostream &operator<<(std::ostream &os, const Tensor &tensor)
@@ -219,7 +226,7 @@ public:
 		return dim;
 	}
 
-private:
+protected:
 	Tensor(const std::string &name, const std::vector<int> &dimension) : Tensor(name)
 	{
 		if (dimension.empty() || dimension.size() == 3 || dimension.size() > 4)
@@ -236,6 +243,18 @@ private:
 		}
 
 		this->tensor_ = new T[dimension_[0] * dimension_[1] * dimension_[2] * dimension_[3]];
+	}
+
+	Tensor(const Tensor &other)
+	{
+		const auto &other_dimension = other.dimension_;
+		int other_dimension_size = other_dimension[0] * other_dimension[1] * other_dimension[2] * other_dimension[3];
+		T *other_tensor = other.get_tensor();
+
+		this->tensor_ = new T[other_dimension_size];
+		this->dimension_ = other.dimension_;
+		this->name_ = other.name_;
+		std::copy(other_tensor, other_tensor + other_dimension_size, this->tensor_);
 	}
 
 protected:
