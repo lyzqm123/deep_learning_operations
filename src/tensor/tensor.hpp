@@ -120,7 +120,11 @@ public:
 	}
 	~Tensor()
 	{
-		delete[] this->tensor_;
+		if (this->tensor_ != nullptr)
+		{
+			delete[] this->tensor_;
+			this->tensor_ = nullptr;
+		}
 	}
 
 	friend std::ostream &operator<<(std::ostream &os, const Tensor &tensor)
@@ -250,6 +254,24 @@ public:
 			dim *= dimension;
 		}
 		return dim;
+	}
+
+	Tensor<T> &operator=(const Tensor<T> &other)
+	{
+		this->name_ = other.name_;
+		this->dimension_ = other.dimension_;
+		this->tensor_ = new T[other.size()];
+		std::copy(other.tensor_, other.tensor_ + other.size(), this->tensor_);
+		return *this;
+	}
+
+	Tensor<T> &operator=(Tensor<T> &&other)
+	{
+		this->name_ = other.name_;
+		this->dimension_ = other.dimension_;
+		this->tensor_ = std::move(other.tensor_);
+		other.tensor_ = nullptr;
+		return *this;
 	}
 
 protected:
