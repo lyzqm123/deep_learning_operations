@@ -73,3 +73,47 @@ TEST(tensorTest, CheckSerializedTensor)
     const auto &serialized_inputs2 = inputs2.get_serialized_tensor();
     ASSERT_EQ(18, (int)serialized_inputs2.size());
 }
+
+TEST(tensorTest, CheckCopyOperationIsFine)
+{
+    using TensorType = int;
+    const std::string input_name = "src_inputs";
+    const std::vector<TensorType> dimension = {1, 3, 3, 2};
+    const std::vector<TensorType> tensor = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, -1, -2, -3, -4, -5, -6, -7, -8};
+    Tensor<TensorType> src_inputs(input_name, dimension, tensor);
+    Tensor<TensorType> dst_inputs("");
+
+    dst_inputs = src_inputs;
+    EXPECT_STREQ(dst_inputs.get_name().c_str(), input_name.c_str());
+
+    auto predict_dimension = dst_inputs.get_dimension();
+    EXPECT_EQ(predict_dimension.size(), dimension.size());
+
+    auto predict_tensor = dst_inputs.get_serialized_tensor();
+    for (int i = 0; i < tensor.size(); i++)
+    {
+        EXPECT_EQ(tensor[i], predict_tensor[i]);
+    }
+}
+
+TEST(tensorTest, CheckMoveOperationIsFine)
+{
+    using TensorType = int;
+    const std::string input_name = "src_inputs";
+    const std::vector<TensorType> dimension = {1, 3, 3, 2};
+    const std::vector<TensorType> tensor = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, -1, -2, -3, -4, -5, -6, -7, -8};
+    Tensor<TensorType> src_inputs(input_name, dimension, tensor);
+    Tensor<TensorType> dst_inputs("");
+
+    dst_inputs = std::move(src_inputs);
+    EXPECT_STREQ(dst_inputs.get_name().c_str(), input_name.c_str());
+
+    auto predict_dimension = dst_inputs.get_dimension();
+    EXPECT_EQ(predict_dimension.size(), dimension.size());
+    
+    auto predict_tensor = dst_inputs.get_serialized_tensor();
+    for (int i = 0; i < tensor.size(); i++)
+    {
+        EXPECT_EQ(tensor[i], predict_tensor[i]);
+    }
+}
