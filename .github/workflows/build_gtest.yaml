@@ -12,6 +12,7 @@ jobs:
     env:
       working-directory: ./fast_deep_learning_inference
     steps:
+    - uses: actions/checkout@v2
     - name: install pybind
       working-directory: ${{ env.working-directory }}
       run: |
@@ -28,7 +29,6 @@ jobs:
         sudo cp lib/*.a /usr/lib 
         sudo ln -s /usr/lib/libgtest.a /usr/local/lib/libgtest.a 
         sudo ln -s /usr/lib/libgtest_main.a /usr/local/lib/libgtest_main.a
-    - uses: actions/checkout@v2
     - name: configure
       working-directory: ${{ env.working-directory }}
       run: cmake CMakeLists.txt
