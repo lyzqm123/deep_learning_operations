@@ -10,8 +10,20 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+    - name: install pybind
+      run: |
+        sudo apt-get install git
+        cd fast_deep_learning_inference/src
+        git clone https://github.com/pybind/pybind11.git
     - name: install gtest manually
-      run: sudo apt-get install libgtest-dev && cd /usr/src/gtest && sudo cmake CMakeLists.txt && sudo make && sudo cp lib/*.a /usr/lib && sudo ln -s /usr/lib/libgtest.a /usr/local/lib/libgtest.a && sudo ln -s /usr/lib/libgtest_main.a /usr/local/lib/libgtest_main.a
+      run: |
+        sudo apt-get install libgtest-dev 
+        cd /usr/src/gtest 
+        sudo cmake CMakeLists.txt 
+        sudo make 
+        sudo cp lib/*.a /usr/lib 
+        sudo ln -s /usr/lib/libgtest.a /usr/local/lib/libgtest.a 
+        sudo ln -s /usr/lib/libgtest_main.a /usr/local/lib/libgtest_main.a
     - uses: actions/checkout@v2
     - name: configure
       run: cmake CMakeLists.txt
