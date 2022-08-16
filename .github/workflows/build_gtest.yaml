@@ -20,10 +20,11 @@ jobs:
         sudo ln -s /usr/lib/libgtest.a /usr/local/lib/libgtest.a 
         sudo ln -s /usr/lib/libgtest_main.a /usr/local/lib/libgtest_main.a
     - name: install pybind
-      working-directory: src
       run: |
         sudo apt-get install git
+        cd /home/runner/work/fast_deep_learning_inference/fast_deep_learning_inference/src
         git clone https://github.com/pybind/pybind11.git
+        cd ../
     - uses: actions/checkout@v2
     - name: configure
       run: cmake CMakeLists.txt
