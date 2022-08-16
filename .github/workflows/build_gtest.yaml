@@ -20,7 +20,7 @@ jobs:
         sudo ln -s /usr/lib/libgtest.a /usr/local/lib/libgtest.a 
         sudo ln -s /usr/lib/libgtest_main.a /usr/local/lib/libgtest_main.a
     - name: install pybind
-      working-directory: ./fast_deep_learning_inference/src
+      working-directory: src
       run: |
         sudo apt-get install git
         git clone https://github.com/pybind/pybind11.git
