@@ -9,7 +9,16 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      working-directory: ./fast_deep_learning_inference
     steps:
+    - name: install pybind
+      working-directory: ${{ env.working-directory }}
+      run: |
+        sudo apt-get install git
+        cd ./src
+        git clone https://github.com/pybind/pybind11.git
+        cd ../
     - name: install gtest manually
       run: |
         sudo apt-get install libgtest-dev 
@@ -19,14 +28,9 @@ jobs:
         sudo cp lib/*.a /usr/lib 
         sudo ln -s /usr/lib/libgtest.a /usr/local/lib/libgtest.a 
         sudo ln -s /usr/lib/libgtest_main.a /usr/local/lib/libgtest_main.a
-    - name: install pybind
-      run: |
-        sudo apt-get install git
-        cd /home/runner/work/fast_deep_learning_inference/fast_deep_learning_inference/src
-        git clone https://github.com/pybind/pybind11.git
-        cd ../
     - uses: actions/checkout@v2
     - name: configure
+      working-directory: ${{ env.working-directory }}
       run: cmake CMakeLists.txt
     - name: make
       run: make
