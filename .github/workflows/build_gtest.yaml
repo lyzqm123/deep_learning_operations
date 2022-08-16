@@ -9,12 +9,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      working-directory: ./fast_deep_learning_inference
     steps:
     - uses: actions/checkout@v2
     - name: install pybind
-      working-directory: ${{ env.working-directory }}
       run: |
         sudo apt-get install git
         cd ./src
@@ -30,7 +27,6 @@ jobs:
         sudo ln -s /usr/lib/libgtest.a /usr/local/lib/libgtest.a 
         sudo ln -s /usr/lib/libgtest_main.a /usr/local/lib/libgtest_main.a
     - name: configure
-      working-directory: ${{ env.working-directory }}
       run: cmake CMakeLists.txt
     - name: make
       run: make
