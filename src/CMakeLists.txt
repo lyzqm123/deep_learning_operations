@@ -15,7 +15,7 @@ set(SRC_FILES
     ${SRC_DIR}/tensor/quantized_tensor.hpp
     ${SRC_DIR}/main.cpp
 )
-include_directories(${DIR})
+include_directories(${DIR} ${EIGEN3_INCLUDE_DIR})
 
 find_package (Eigen3 3.3 REQUIRED)
 
