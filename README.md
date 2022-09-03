@@ -3,6 +3,7 @@
   - CMake (https://cmake.org/)
   - GoogleTest (https://github.com/google/googletest)
   - pybind11 (https://github.com/pybind/pybind11)
+  - Eigen (https://eigen.tuxfamily.org/index.php?title=Main_Page)
 
 - **Build**
   1. `git clone https://github.com/lyzqm123/fast_deep_learning_inference.git`
@@ -16,14 +17,15 @@
 - **Supported operations**
   |Operation|Location|
   |:--:|:--:|
+  |Matrix multiplication|[src/tensor/tensor.hpp](https://github.com/lyzqm123/fast_deep_learning_inference/blob/master/src/tensor/tensor.hpp#L278-L307) |
   |Conv2D|[src/operation/conv/conv2d.hpp](https://github.com/lyzqm123/deep_learning_operations/blob/master/src/operation/conv/conv2d.hpp)|
   |Quantization|[src/operation/quantization/quantization.hpp](https://github.com/lyzqm123/deep_learning_operations/blob/master/src/operation/quantization/quantization.hpp)|
   |DeQuantization|[src/operation/quantization/dequantization.hpp](https://github.com/lyzqm123/deep_learning_operations/blob/master/src/operation/quantization/dequantization.hpp)|
 
 
 - **Google test**
-  - `./dl_operations_gtest` 
-  - ![unittest](https://user-images.githubusercontent.com/22426868/168610945-c180ed16-7519-480f-b99d-34be85930c6e.png)
+  - `./dl_operations_gtest`
+  - ![unittest](https://user-images.githubusercontent.com/22426868/188266006-53435974-7856-483f-925a-3379555a6ff0.png)
 
 
 - **Pybind module**
