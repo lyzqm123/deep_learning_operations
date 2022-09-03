@@ -6,6 +6,7 @@
 #include <random>
 #include <iostream>
 #include <fstream>
+#include <eigen3/Eigen/Dense>
 
 template <typename T>
 class Tensor
@@ -272,6 +273,58 @@ public:
 		this->tensor_ = std::move(other.tensor_);
 		other.tensor_ = nullptr;
 		return *this;
+	}
+
+	Tensor<T> operator*(const Tensor<T> &other)
+	{
+		assert(dimension_.back() == 1);
+		assert(other.dimension_.back() == 1);
+
+		if (dimension_.at(2) != other.dimension_.at(1))
+		{
+			throw std::runtime_error("Impossible to matrix multiplication.");
+		}
+
+		auto eigen_inputs = this->convert_to_eigen_matrix();
+		auto eigen_weights = other.convert_to_eigen_matrix();
+		auto eigen_outputs = eigen_inputs * eigen_weights;
+
+		Tensor<T> outputs("mul_outputs", {dimension_.at(0), dimension_.at(1), other.dimension_.at(1), other.dimension_.at(3)});
+		for (int b = 0; b < dimension_[0]; b++)
+		{
+			for (int c = 0; c < dimension_[3]; c++)
+			{
+				for (int h = 0; h < dimension_[1]; h++)
+				{
+					for (int w = 0; w < dimension_[2]; w++)
+					{
+						outputs.tensor_[((b * dimension_[3] + c) * dimension_[1] + h) * dimension_[2] + w] = eigen_outputs(b * dimension_[1] + h, c * dimension_[2] + w);
+					}
+				}
+			}
+		}
+		return outputs;
+	}
+
+	Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> convert_to_eigen_matrix() const
+	{
+		Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> matrix;
+		matrix.resize(this->dimension_.at(0) * this->dimension_.at(1), this->dimension_.at(2) * this->dimension_.at(3));
+		
+		for (int b = 0; b < dimension_[0]; b++)
+		{
+			for (int c = 0; c < dimension_[3]; c++)
+			{
+				for (int h = 0; h < dimension_[1]; h++)
+				{
+					for (int w = 0; w < dimension_[2]; w++)
+					{
+						matrix(b * dimension_[1] + h, c * dimension_[2] + w) = this->tensor_[((b * dimension_[3] + c) * dimension_[1] + h) * dimension_[2] + w];
+					}
+				}
+			}
+		}
+		return matrix;
 	}
 
 protected:
