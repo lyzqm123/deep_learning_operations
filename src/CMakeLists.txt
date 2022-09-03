@@ -17,11 +17,14 @@ set(SRC_FILES
 )
 include_directories(${DIR})
 
+find_package (Eigen3 3.3 REQUIRED)
+
 add_subdirectory(pybind11)
 add_executable (${BINARY} ${SRC_FILES})
 add_library(${BINARY}_lib STATIC ${SRC_FILES})
 
 pybind11_add_module(fastinference fastinference.cpp)
 
+target_link_libraries (${BINARY} Eigen3::Eigen)
 target_compile_options(${BINARY} PUBLIC -Wall -Werror)
 target_include_directories(${BINARY} PUBLIC ${DIR})
